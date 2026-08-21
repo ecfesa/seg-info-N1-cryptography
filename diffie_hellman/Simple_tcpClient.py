@@ -1,7 +1,7 @@
 from socket import *
 import random
+import argparse
 
-SIMULATE_ATTACK = True  # Set to True to simulate wrong secret
 SERVER_NAME = "127.0.0.1"
 SERVER_PORT = 1300
 BUFFER_SIZE = 65000
@@ -126,7 +126,17 @@ def send_message_bytes(client_socket, data):
     client_socket.send(data)
 
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="Diffie-Hellman TCP client")
+    parser.add_argument("--attack", action="store_true",
+                        help="simulate an attacker using a wrong key")
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    simulate_attack = args.attack
     client_socket = connect_to_server(SERVER_NAME, SERVER_PORT)
     print()
     print("=" * 50)
@@ -184,7 +194,7 @@ def main():
     sentence = input("  Input message: ")
 
     # Encrypt and send
-    if SIMULATE_ATTACK:
+    if simulate_attack:
         attack_key = shared_secret + 50
         print(f"  [ATTACK] Using wrong key: {attack_key} (real: {shared_secret})")
         encrypted = xor_encrypt(sentence, attack_key)
@@ -196,7 +206,7 @@ def main():
     # Receive and decrypt
     encrypted_response = client_socket.recv(BUFFER_SIZE)
     print(f"  Received encrypted: {encrypted_response.hex()}")
-    if SIMULATE_ATTACK:
+    if simulate_attack:
         response = xor_decrypt(encrypted_response, attack_key)
     else:
         response = xor_decrypt(encrypted_response, shared_secret)

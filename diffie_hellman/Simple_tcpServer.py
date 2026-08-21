@@ -117,6 +117,7 @@ def diffie_hellman_server(public_values):
 def create_server_socket(port):
     """Create, bind and start listening on a TCP server socket."""
     server_socket = socket(AF_INET, SOCK_STREAM)
+    server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     server_socket.bind(("", port))
     server_socket.listen(5)
     print("TCP Server running on port", port)
@@ -191,8 +192,13 @@ def main():
     # Receive encrypted message from client
     encrypted_data = connection_socket.recv(BUFFER_SIZE)
     print(f"  Received encrypted: {encrypted_data.hex()}")
-    message = xor_decrypt(encrypted_data, shared_secret)
-    print(f"  Decrypted: {message}")
+    try:
+        message = xor_decrypt(encrypted_data, shared_secret)
+        print(f"  Decrypted: {message}")
+    except UnicodeDecodeError:
+        print("  Decryption failed: message was not encrypted with the shared secret!")
+        connection_socket.close()
+        return
 
     # Process and send back encrypted response
     response = message.upper()
