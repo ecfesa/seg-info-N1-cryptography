@@ -123,7 +123,7 @@ def send_message(client_socket, message):
 
 def send_message_bytes(client_socket, data):
     """Send raw bytes to the server."""
-    client_socket.send(data)
+    client_socket.send(bytes(data, 'utf-8'))
 
 
 def parse_args():
@@ -133,6 +133,32 @@ def parse_args():
                         help="simulate an attacker using a wrong key")
     return parser.parse_args()
 
+def caesar_encrypt(plain_text, shift):
+    """Encrypt plain_text using Caesar cipher with the given shift."""
+    # TODO: implement Caesar cipher encryption
+    # Should shift each letter by 'shift' positions, wrapping around Z->A
+    
+    output_string = ""
+    for letter in plain_text:
+        value = ord(letter)
+        new_value = value + shift
+        output_string += chr(new_value)
+    
+    return output_string
+
+
+def caesar_decrypt(cipher_text, shift):
+    """Decrypt cipher_text using Caesar cipher with the given shift."""
+    # TODO: implement Caesar cipher decryption
+    # Should reverse the shift applied during encryption
+    
+    output_string = ""
+    for letter in cipher_text:
+        value = ord(letter)
+        new_value = value - shift
+        output_string += chr(new_value)
+    
+    return output_string
 
 def main():
     args = parse_args()
@@ -197,19 +223,21 @@ def main():
     if simulate_attack:
         attack_key = shared_secret + 50
         print(f"  [ATTACK] Using wrong key: {attack_key} (real: {shared_secret})")
-        encrypted = xor_encrypt(sentence, attack_key)
+        encrypted = caesar_encrypt(sentence, attack_key)
     else:
-        encrypted = xor_encrypt(sentence, shared_secret)
-    print(f"  Sending encrypted: {encrypted.hex()}")
+        encrypted = caesar_encrypt(sentence, shared_secret)
+    print(f"  Sending encrypted: {encrypted}")
     send_message_bytes(client_socket, encrypted)
 
     # Receive and decrypt
-    encrypted_response = client_socket.recv(BUFFER_SIZE)
-    print(f"  Received encrypted: {encrypted_response.hex()}")
+    received_response = client_socket.recv(BUFFER_SIZE)
+    encrypted_data = str(received_response, "utf-8")
+
+    print(f"  Received encrypted: {encrypted_data}")
     if simulate_attack:
-        response = xor_decrypt(encrypted_response, attack_key)
+        response = caesar_decrypt(encrypted_data, attack_key)
     else:
-        response = xor_decrypt(encrypted_response, shared_secret)
+        response = caesar_decrypt(encrypted_data, shared_secret)
     print(f"  Decrypted: {response}")
 
     client_socket.close()

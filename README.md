@@ -1,52 +1,120 @@
-# seg-info-N1-cryptography
+# 🔐 SegInfo — Cryptography
 
-Exercises for the **Security Information** (SegInfo) course, covering classic cryptography and secure key exchange protocols.
+Educational cryptography exercises developed for the **Information Security (SegInfo)** course.
 
-## Contents
+The project demonstrates classical encryption, TCP communication, and Diffie–Hellman key exchange.
 
-### Caesar Cipher
-TCP client/server implementing the Caesar cipher for encrypted communication over a network.
+> ⚠️ **Educational project:** The cryptographic implementations are simplified and are not intended for production use.
 
-### Diffie-Hellman
-TCP client/server implementing the Diffie-Hellman key exchange to establish a shared secret over an insecure channel, followed by encrypted communication.
+## ✨ Features
 
-Run the client with `--attack` to simulate a peer encrypting with a **wrong key**:
+* 🔤 **Caesar Cipher**
+
+  * TCP client/server communication
+  * Message encryption and decryption
+
+* 🔑 **Diffie–Hellman**
+
+  * Public/private key exchange
+  * Shared secret generation
+  * Encrypted TCP communication
+
+* ⚔️ **Attack Simulation**
+
+  * `--attack` mode simulates communication with an incorrect key
+  * Demonstrates the effects of a key mismatch
+
+* 🐍 **Python**
+
+  * No external dependencies
+  * Simple command-line execution
+
+## 📁 Project Structure
+
+```text
+seg-info-N1-cryptography/
+├── caesar_cipher/
+│   ├── Simple_tcpClient.py
+│   └── Simple_tcpServer.py
+│
+├── diffie_hellman/
+│   ├── Simple_tcpClient.py
+│   └── Simple_tcpServer.py
+│
+└── README.md
+```
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 
 ```bash
-python3 Simple_tcpClient.py          # normal exchange
-python3 Simple_tcpClient.py --attack # client uses shared_secret + 50 as key
+git clone https://github.com/ecfesa/seg-info-N1-cryptography.git
+cd seg-info-N1-cryptography
 ```
 
-#### Notes on the `--attack` flag
+### 2. Run an exercise
 
-This is **not** a real attack on Diffie-Hellman. It simulates a key mismatch:
-the client encrypts with `shared_secret + 50`, so the honest server cannot decrypt
-the message and reports `Decryption failed` instead of crashing. No third party
-intercepts anything. Real attacks against plain DH would be:
+Start the server first:
 
-- **Man-in-the-middle**: an attacker replaces `A`/`B` during the exchange and
-  ends up sharing a secret with each side, since plain DH has no authentication.
-- **Discrete log brute force**: an eavesdropper recovers the private key from the
-  public values `(p, g, A)`. Trivial here because the prime is only 8 bits;
-  infeasible with properly sized primes (2048+ bits).
-
-#### Why the response comes back almost intact
-
-With a wrong key, only the *first* leg is broken (server receives garbage). On
-the return trip the damage cancels out instead of stacking, because each side
-reuses its own key consistently and XOR is self-inverse (`X ⊕ K ⊕ K = X`):
-
-```
-P ──⊕Kw──> C1 ──⊕Kr──> garbage ──upper()──> G' ──⊕Kr──> C2 ──⊕Kw──> ≈ P
+```bash
+cd caesar_cipher
+python3 Simple_tcpServer.py
 ```
 
-Every key application undoes itself across the round trip; only genuine data
-mutation mid-flight (the server's `.upper()`) leaves permanent damage. In
-practice the corrupted bytes often become NUL characters (`\x00`), which are
-invisible in the terminal — print with `repr()` to see them. This self-canceling
-behavior is specific to raw XOR (malleable ciphers); with a block cipher like
-AES the response really would come back unrecoverable.
+Then, in another terminal:
 
-## How to Run
+```bash
+python3 Simple_tcpClient.py
+```
 
-Each directory contains a `Simple_tcpServer.py` and a `Simple_tcpClient.py`. Start the server first, then run the client in a separate terminal.
+The same process can be used for Diffie–Hellman:
+
+```bash
+cd diffie_hellman
+python3 Simple_tcpServer.py
+```
+
+```bash
+python3 Simple_tcpClient.py
+```
+
+### 3. Test the attack simulation
+
+Inside `diffie_hellman/`:
+
+```bash
+python3 Simple_tcpClient.py --attack
+```
+
+This intentionally uses an incorrect key to demonstrate a key mismatch between the client and server. It is **not a real Man-in-the-Middle attack**.
+
+## 📺 Video Demonstration
+
+> 🎥 **Video coming soon**
+
+A demonstration of the project, including both exercises and the attack simulation, will be added here.
+
+<!-- Future video:
+[![Project Demonstration](VIDEO_THUMBNAIL_URL)](VIDEO_URL)
+-->
+
+## 📚 Concepts
+
+| Concept                | Implementation  |
+| ---------------------- | --------------- |
+| TCP communication      | Client / Server |
+| Classical cryptography | Caesar Cipher   |
+| Key exchange           | Diffie–Hellman  |
+| Shared secrets         | Diffie–Hellman  |
+| Key mismatch           | `--attack`      |
+
+## ⚠️ Security Notice
+
+This project is intended for **learning purposes only**. The Diffie–Hellman implementation uses intentionally small parameters, and the encryption mechanisms are simplified demonstrations rather than secure cryptographic protocols.
+
+## 👥 Authors
+
+Developed for the **Security Information (SegInfo)** course.
+
+[GitHub Repository](https://github.com/ecfesa/seg-info-N1-cryptography)

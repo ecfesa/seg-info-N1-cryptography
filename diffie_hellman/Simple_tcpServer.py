@@ -89,6 +89,34 @@ def xor_decrypt(encrypted, key):
     return decrypted.decode("utf-8")
 
 
+def caesar_encrypt(plain_text, shift):
+    """Encrypt plain_text using Caesar cipher with the given shift."""
+    # TODO: implement Caesar cipher encryption
+    # Should shift each letter by 'shift' positions, wrapping around Z->A
+    
+    output_string = ""
+    for letter in plain_text:
+        value = ord(letter)
+        new_value = value + shift
+        output_string += chr(new_value)
+    
+    return output_string
+
+
+def caesar_decrypt(cipher_text, shift):
+    """Decrypt cipher_text using Caesar cipher with the given shift."""
+    # TODO: implement Caesar cipher decryption
+    # Should reverse the shift applied during encryption
+    
+    output_string = ""
+    for letter in cipher_text:
+        value = ord(letter)
+        new_value = value - shift
+        output_string += chr(new_value)
+    
+    return output_string
+
+
 def diffie_hellman_server(public_values):
     """Perform Diffie-Hellman key exchange on server side.
 
@@ -190,10 +218,11 @@ def main():
     print("=" * 50)
 
     # Receive encrypted message from client
-    encrypted_data = connection_socket.recv(BUFFER_SIZE)
-    print(f"  Received encrypted: {encrypted_data.hex()}")
+    received_data = connection_socket.recv(BUFFER_SIZE)
+    encrypted_received_data = str(received_data, "utf-8")
+    print(f"  Received encrypted: {encrypted_received_data}")
     try:
-        message = xor_decrypt(encrypted_data, shared_secret)
+        message = caesar_decrypt(encrypted_received_data, shared_secret)
         print(f"  Decrypted: {message}")
     except UnicodeDecodeError:
         print("  Decryption failed: message was not encrypted with the shared secret!")
@@ -202,9 +231,9 @@ def main():
 
     # Process and send back encrypted response
     response = message.upper()
-    encrypted_response = xor_encrypt(response, shared_secret)
-    print(f"  Sending encrypted: {encrypted_response.hex()}")
-    connection_socket.send(encrypted_response)
+    encrypted_response = caesar_encrypt(response, shared_secret)
+    print(f"  Sending encrypted: {encrypted_response}")
+    connection_socket.send(bytes(encrypted_response,"utf-8"))
 
     connection_socket.close()
     print()
