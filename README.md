@@ -91,13 +91,9 @@ This intentionally uses an incorrect key to demonstrate a key mismatch between t
 
 ## 📺 Video Demonstration
 
-> 🎥 **Video coming soon**
-
 A demonstration of the project, including both exercises and the attack simulation, will be added here.
 
-<!-- Future video:
-[![Project Demonstration](VIDEO_THUMBNAIL_URL)](VIDEO_URL)
--->
+[▶️ Watch the project demonstration](docs/demonstration.mp4)
 
 ## 📚 Concepts
 
