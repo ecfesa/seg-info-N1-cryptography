@@ -2,7 +2,7 @@ from socket import *
 import random
 import argparse
 
-SERVER_NAME = "127.0.0.1"
+SERVER_NAME = "10.1.73.10"
 SERVER_PORT = 1300
 BUFFER_SIZE = 65000
 
