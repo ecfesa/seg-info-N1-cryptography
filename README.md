@@ -93,7 +93,9 @@ This intentionally uses an incorrect key to demonstrate a key mismatch between t
 
 A demonstration of the project, including both exercises and the attack simulation, will be added here.
 
-[▶️ Watch the project demonstration](docs/demonstration.mp4)
+<video controls width="800">
+  <source src="docs/demonstration.mp4" type="video/mp4">
+</video>
 
 ## 📚 Concepts
 
